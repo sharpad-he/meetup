@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>像风一样 · 雅集邀约</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #2c2c2c;
+            --ink-light: #5a5a5a;
+            --paper: #f7f3eb;
+            --paper-dark: #ede7db;
+            --tea: #8b7355;
+            --tea-light: #b8a88a;
+            --tea-dark: #6b5a3e;
+            --cinnabar: #b85450;
+            --cinnabar-light: #d4736f;
+            --jade: #5a7a6a;
+            --jade-light: #7a9a8a;
+            --gold: #c9a96e;
+            --border: #d4c9b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'ZCOOL XiaoWei', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(139,115,85,0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(90,122,106,0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover {
+            text-align: center;
+            padding: 60px 20px 40px;
+            position: relative;
+        }
+
+        .seal {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--cinnabar);
+            color: var(--cinnabar);
+            font-size: 12px;
+            line-height: 46px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            font-weight: 700;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        .seal::before {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px; right: 3px; bottom: 3px;
+            border: 1px solid var(--cinnabar);
+            opacity: 0.5;
+        }
+
+        .cover h1 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: 12px;
+            color: var(--ink);
+            text-shadow: 0 0 30px rgba(255,255,255,0.9), 0 0 60px rgba(255,255,255,0.5);
+            margin-bottom: 10px;
+            font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+        }
+
+        .cover .subtitle {
+            font-size: 1rem;
+            color: var(--tea);
+            letter-spacing: 6px;
+            margin-bottom: 30px;
+        }
+
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: var(--border);
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .divider::before, .divider::after {
+            content: '◆';
+            position: absolute;
+            top: -8px;
+            font-size: 8px;
+            color: var(--tea-light);
+        }
+
+        .divider::before { left: -10px; }
+        .divider::after { right: -10px; }
+
+        .card {
+            background: rgba(255,255,255,0.82);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 30px;
+            margin-bottom: 25px;
+            position: relative;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 20px rgba(139,115,85,0.08);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title .icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--tea-light);
+            border-radius: 50%;
+            font-size: 14px;
+            color: var(--tea);
+        }
+
+        .theme-desc {
+            font-size: 1rem;
+            color: var(--ink-light);
+            line-height: 2;
+            text-align: justify;
+            padding: 15px;
+            background: rgba(237,231,219,0.55);
+            border-left: 3px solid var(--tea-light);
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 100px;
+        }
+
+        .theme-desc[contenteditable="true"] {
+            outline: none;
+            border-left-color: var(--cinnabar);
+            background: rgba(237,231,219,0.5);
+        }
+
+        .edit-hint {
+            font-size: 0.75rem;
+            color: var(--tea-light);
+            text-align: right;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .vote-section {
+            margin-bottom: 20px;
+        }
+
+        .vote-label {
+            font-size: 0.95rem;
+            color: var(--tea-dark);
+            margin-bottom: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vote-label::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: var(--tea);
+            border-radius: 2px;
+        }
+
+        .vote-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .vote-option {
+            padding: 8px 18px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            color: var(--ink-light);
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
+
+        .vote-option:hover {
+            border-color: var(--tea);
+            color: var(--tea-dark);
+        }
+
+        .vote-option.selected {
+            background: var(--tea);
+            color: white;
+            border-color: var(--tea);
+        }
+
+        .vote-option .count {
+            font-size: 0.75rem;
+            margin-left: 4px;
+            opacity: 0.7;
+        }
+
+        .vote-bar {
+            margin-top: 15px;
+        }
+
+        .vote-bar-item {
+            margin-bottom: 12px;
+        }
+
+        .vote-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            color: var(--ink-light);
+        }
+
+        .vote-bar-track {
+            height: 6px;
+            background: var(--paper-dark);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .vote-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--tea-light), var(--tea));
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .vote-bar-fill.leading {
+            background: linear-gradient(90deg, var(--cinnabar-light), var(--cinnabar));
+        }
+
+        .add-option {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .add-option input {
+            flex: 1;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.75);
+            color: var(--ink);
+            outline: none;
+        }
+
+        .add-option input:focus {
+            border-color: var(--tea);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            border: 1px solid var(--tea);
+            background: transparent;
+            color: var(--tea);
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-small:hover {
+            background: var(--tea);
+            color: white;
+        }
+
+        .signup-form {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            color: var(--tea-dark);
+        }
+
+        .form-group input, .form-group textarea {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: rgba(255,255,255,0.5);
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--tea);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .btn-primary {
+            padding: 12px 32px;
+            border: none;
+            background: var(--tea);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: var(--tea-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139,115,85,0.2);
+        }
+
+        .attendee-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .attendee-card {
+            background: rgba(255,255,255,0.88);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .attendee-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139,115,85,0.1);
+        }
+
+        .attendee-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--paper-dark), var(--tea-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.2rem;
+            color: var(--tea-dark);
+            border: 2px solid var(--border);
+        }
+
+        .attendee-name {
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .attendee-note {
+            font-size: 0.8rem;
+            color: var(--tea);
+            font-style: italic;
+        }
+
+        .attendee-time {
+            font-size: 0.75rem;
+            color: var(--tea-light);
+            margin-top: 8px;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: var(--tea-light);
+            cursor: pointer;
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            width: 20px;
+            height: 20px;
+            line-height: 18px;
+            text-align: center;
+        }
+
+        .attendee-card:hover .remove-btn {
+            opacity: 1;
+        }
+
+        .remove-btn:hover {
+            color: var(--cinnabar);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            margin-bottom: 25px;
+            background: rgba(237,231,219,0.3);
+            border-radius: 4px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--tea);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--tea-light);
+            margin-top: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--tea-light);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+        }
+
+        .footer .seal-small {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 1.5px solid var(--cinnabar);
+            color: var(--cinnabar);
+            font-size: 10px;
+            line-height: 27px;
+            text-align: center;
+            margin-bottom: 15px;
+            opacity: 0.6;
+        }
+
+        .sync-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--tea);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .sync-status.syncing {
+            color: var(--cinnabar);
+        }
+
+        .sync-status .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--jade);
+        }
+
+        .sync-status.syncing .dot {
+            background: var(--cinnabar);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .reset-btn {
+            margin-top: 30px;
+            padding: 10px 24px;
+            border: 1px solid var(--cinnabar);
+            background: transparent;
+            color: var(--cinnabar);
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+        }
+
+        .reset-btn:hover {
+            background: var(--cinnabar);
+            color: white;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal h3 {
+            font-size: 1.3rem;
+            color: var(--ink);
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            font-size: 0.95rem;
+            color: var(--ink-light);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.cancel {
+            background: transparent;
+            color: var(--ink-light);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--paper-dark);
+        }
+
+        .modal-btn.confirm {
+            background: var(--cinnabar);
+            color: white;
+            border-color: var(--cinnabar);
+        }
+
+        .modal-btn.confirm:hover {
+            background: #9a4643;
+        }
+
+        @media (max-width: 600px) {
+            .cover h1 {
+                font-size: 2rem;
+                letter-spacing: 6px;
+            }
+            .attendee-list {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stats-bar {
+                gap: 20px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="sync-status" id="syncStatus">
+        <span class="dot"></span>
+        <span>同步中...</span>
+    </div>
+
+    <div class="container">
+        <div class="cover">
+            <div class="seal">雅集</div>
+            <h1>像风一样</h1>
+            <p class="subtitle">朋 友 小 聚 邀 约</p>
+            <div class="divider"></div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="statAttendees">0</div>
+                <div class="stat-label">已报名</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="statVotes">0</div>
+                <div class="stat-label">已投票</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="statDays">--</div>
+                <div class="stat-label">距聚会</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span class="icon">📜</span>
+                <span>聚会议题</span>
+            </div>
+            <div class="theme-desc" id="themeDesc" contenteditable="true">春风拂面，花开正好。诚邀诸君暂别尘嚣，共赴一场如风般自在的雅集。
+
+或品茗论道，或把酒言欢，或登高望远，或闲庭信步。
+
+愿此间时光，如宋人笔下的山水，淡远而悠长。</div>
+            <div class="edit-hint">✎ 点击上方文字可直接编辑聚会主题描述</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span class="icon">📅</span>
+                <span>时间择选</span>
+            </div>
+            <div class="vote-section" id="timeVote">
+                <div class="vote-label">可选日期</div>
+                <div class="vote-options" id="timeOptions"></div>
+                <div class="add-option">
+                    <input type="text" id="newTime" placeholder="添加新的时间选项...">
+                    <button class="btn-small" onclick="addOption('time')">添加</button>
+                </div>
+                <div class="vote-bar" id="timeBars"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span class="icon">📍</span>
+                <span>地点商议</span>
+            </div>
+            <div class="vote-section" id="placeVote">
+                <div class="vote-label">可选地点</div>
+                <div class="vote-options" id="placeOptions"></div>
+                <div class="add-option">
+                    <input type="text" id="newPlace" placeholder="添加新的地点选项...">
+                    <button class="btn-small" onclick="addOption('place')">添加</button>
+                </div>
+                <div class="vote-bar" id="placeBars"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span class="icon">🎋</span>
+                <span>聚会方式</span>
+            </div>
+            <div class="vote-section" id="activityVote">
+                <div class="vote-label">可选活动</div>
+                <div class="vote-options" id="activityOptions"></div>
+                <div class="add-option">
+                    <input type="text" id="newActivity" placeholder="添加新的活动选项...">
+                    <button class="btn-small" onclick="addOption('activity')">添加</button>
+                </div>
+                <div class="vote-bar" id="activityBars"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span class="icon">🌸</span>
+                <span>友人报名</span>
+            </div>
+            <div class="signup-form">
+                <div class="form-group">
+                    <label>芳名</label>
+                    <input type="text" id="signupName" placeholder="请输入您的名字">
+                </div>
+                <div class="form-group">
+                    <label>寄语（可选）</label>
+                    <textarea id="signupNote" placeholder="留下一句想说的话..."></textarea>
+                </div>
+                <div style="text-align: center;">
+                    <button class="btn-primary" onclick="submitSignup()">报名参加</button>
+                </div>
+            </div>
+            <div class="vote-label" style="margin-top: 25px;">已报名友人</div>
+            <div class="attendee-list" id="attendeeList"></div>
+        </div>
+
+        <div class="footer">
+            <div class="seal-small">风</div>
+            <p>愿如风有信，长与日俱中</p>
+            <p style="margin-top: 10px; font-size: 0.75rem; opacity: 0.6;">数据存储于云端 · 实时同步</p>
+            <button class="reset-btn" onclick="showResetModal()">发起新活动</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal">
+            <h3>⚠️ 确认重置</h3>
+            <p>确定要清空所有数据，发起新的聚会活动吗？<br>这将清除所有投票、报名和主题信息。</p>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="hideResetModal()">取消</button>
+                <button class="modal-btn confirm" onclick="confirmReset()">确认重置</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const JSONBIN_CONFIG = {
+            binId: '6a08309b5d6c3911694c82b5',
+            collectionId: '6a08309b5d6c3911694c82b5',
+            masterKey: '$2a$10$KsQnGTLtIr3GFd4469xMiuJKmmurxQh2IFMzc6kJO7WeRc9pLcHYW'
+        };
+
+        const API_BASE = 'https://api.jsonbin.io/v3';
+        const STORAGE_KEY = 'xiangfeng_gathering_v4';
+
+        let data = {
+            theme: '',
+            time: { options: ['本周六下午', '本周日下午', '下周六全天', '下周日下午'], votes: {} },
+            place: { options: ['风雅皇姑区', '浑河岸边', '工业美学铁西区', '金廊沈河区', '怀旧和平区'], votes: {} },
+            activity: { options: ['品茗论道', '把酒言欢', '登山望远', '闲庭对弈', '赏花游园', '观影小酌', '打球运动'], votes: {} },
+            attendees: []
+        };
+
+        let pollingInterval = null;
+        let lastModified = null;
+
+        function updateSyncStatus(syncing, message) {
+            const status = document.getElementById('syncStatus');
+            if (!status) return;
+            if (syncing) {
+                status.classList.add('syncing');
+                status.querySelector('span:last-child').textContent = '同步中...';
+            } else {
+                status.classList.remove('syncing');
+                status.querySelector('span:last-child').textContent = message || '云端同步';
+            }
+        }
+
+        function getUserId() {
+            let uid = localStorage.getItem('xf_user_id_v4');
+            if (!uid) {
+                uid = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+                localStorage.setItem('xf_user_id_v4', uid);
+            }
+            return uid;
+        }
+
+        async function fetchFromCloud() {
+            try {
+                const response = await fetch(`${API_BASE}/b/${JSONBIN_CONFIG.binId}/latest`, {
+                    headers: {
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    }
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.record) {
+                        const cloudData = result.record;
+                        const cloudModified = result.metadata.modifiedAt;
+                        
+                        if (cloudModified !== lastModified) {
+                            lastModified = cloudModified;
+                            data = { ...data, ...cloudData };
+                            initVotes();
+                            const themeEl = document.getElementById('themeDesc');
+                            if (themeEl && cloudData.theme) {
+                                themeEl.innerText = cloudData.theme;
+                            }
+                            renderAll();
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('从云端获取数据失败:', error);
+            }
+        }
+
+        async function saveToCloud() {
+            try {
+                const response = await fetch(`${API_BASE}/b/${JSONBIN_CONFIG.binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.masterKey
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.metadata) {
+                        lastModified = result.metadata.modifiedAt;
+                    }
+                    return true;
+                }
+            } catch (error) {
+                console.error('保存到云端失败:', error);
+            }
+            return false;
+        }
+
+        async function loadData() {
+            updateSyncStatus(true);
+            
+            await fetchFromCloud();
+            
+            const localData = localStorage.getItem(STORAGE_KEY);
+            if (localData) {
+                try {
+                    const parsed = JSON.parse(localData);
+                    if (!lastModified) {
+                        data = { ...data, ...parsed };
+                    }
+                } catch (error) {
+                    console.error('解析本地数据失败:', error);
+                }
+            }
+            
+            initVotes();
+            const themeEl = document.getElementById('themeDesc');
+            if (themeEl && data.theme) {
+                themeEl.innerText = data.theme;
+            }
+            renderAll();
+            updateSyncStatus(false, '云端同步');
+            
+            startPolling();
+        }
+
+        function startPolling() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(fetchFromCloud, 3000);
+        }
+
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        async function saveData() {
+            updateSyncStatus(true);
+            data.theme = document.getElementById('themeDesc').innerText;
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            
+            await saveToCloud();
+            
+            updateSyncStatus(false, '云端同步');
+        }
+
+        function initVotes() {
+            ['time', 'place', 'activity'].forEach(type => {
+                if (!data[type]) data[type] = { options: [], votes: {} };
+                data[type].options.forEach(opt => {
+                    if (!data[type].votes[opt]) data[type].votes[opt] = [];
+                });
+            });
+        }
+
+        function renderVote(type) {
+            const container = document.getElementById(type + 'Options');
+            const barsContainer = document.getElementById(type + 'Bars');
+            const voteData = data[type];
+            
+            if (!voteData || !voteData.options || !voteData.votes) return;
+
+            const totalVotes = Object.values(voteData.votes).reduce((sum, arr) => sum + (arr ? arr.length : 0), 0);
+            const maxVotes = Math.max(...Object.values(voteData.votes).map(arr => arr ? arr.length : 0), 0);
+
+            container.innerHTML = voteData.options.map(opt => {
+                const count = voteData.votes[opt] ? voteData.votes[opt].length : 0;
+                const hasVoted = voteData.votes[opt] && voteData.votes[opt].includes(getUserId());
+                return `<button class="vote-option ${hasVoted ? 'selected' : ''}" onclick="toggleVote('${type}', '${opt}')">${opt}<span class="count">(${count})</span></button>`;
+            }).join('');
+
+            barsContainer.innerHTML = voteData.options.map(opt => {
+                const count = voteData.votes[opt] ? voteData.votes[opt].length : 0;
+                const percent = totalVotes > 0 ? (count / totalVotes * 100) : 0;
+                const isLeading = count === maxVotes && count > 0;
+                return `<div class="vote-bar-item"><div class="vote-bar-label"><span>${opt}</span><span>${count} 票</span></div><div class="vote-bar-track"><div class="vote-bar-fill ${isLeading ? 'leading' : ''}" style="width: ${percent}%"></div></div></div>`;
+            }).join('');
+        }
+
+        async function toggleVote(type, option) {
+            const uid = getUserId();
+            const votes = data[type].votes;
+            if (!votes[option]) votes[option] = [];
+            const idx = votes[option].indexOf(uid);
+            if (idx > -1) {
+                votes[option].splice(idx, 1);
+            } else {
+                votes[option].push(uid);
+            }
+            await saveData();
+            renderVote(type);
+            updateStats();
+        }
+
+        async function addOption(type) {
+            const input = document.getElementById('new' + type.charAt(0).toUpperCase() + type.slice(1));
+            const value = input.value.trim();
+            if (!value) return;
+            if (!data[type].options.includes(value)) {
+                data[type].options.push(value);
+                data[type].votes[value] = [];
+                await saveData();
+                renderVote(type);
+                input.value = '';
+            }
+        }
+
+        async function submitSignup() {
+            const name = document.getElementById('signupName').value.trim();
+            const note = document.getElementById('signupNote').value.trim();
+            if (!name) {
+                alert('请输入您的名字');
+                return;
+            }
+            const attendee = {
+                id: Date.now(),
+                name: name,
+                note: note,
+                time: new Date().toLocaleString('zh-CN')
+            };
+            data.attendees.push(attendee);
+            await saveData();
+            renderAttendees();
+            updateStats();
+            document.getElementById('signupName').value = '';
+            document.getElementById('signupNote').value = '';
+        }
+
+        async function removeAttendee(id) {
+            data.attendees = data.attendees.filter(a => a.id !== id);
+            await saveData();
+            renderAttendees();
+            updateStats();
+        }
+
+        function renderAttendees() {
+            const container = document.getElementById('attendeeList');
+            if (!container) return;
+            
+            if (data.attendees.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--tea-light); font-style: italic;">暂无报名，期待您的到来</p>';
+                return;
+            }
+
+            container.innerHTML = data.attendees.map(a => `
+                <div class="attendee-card">
+                    <button class="remove-btn" onclick="removeAttendee(${a.id})">×</button>
+                    <div class="attendee-avatar">${a.name.charAt(0)}</div>
+                    <div class="attendee-name">${a.name}</div>
+                    ${a.note ? `<div class="attendee-note">${a.note}</div>` : ''}
+                    <div class="attendee-time">${a.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const attendeesEl = document.getElementById('statAttendees');
+            const votesEl = document.getElementById('statVotes');
+            const daysEl = document.getElementById('statDays');
+            
+            if (attendeesEl) attendeesEl.textContent = data.attendees.length;
+
+            const totalVotes = ['time', 'place', 'activity'].reduce((sum, type) => {
+                return sum + Object.values(data[type]?.votes || {}).reduce((s, arr) => s + (arr?.length || 0), 0);
+            }, 0);
+            if (votesEl) votesEl.textContent = totalVotes;
+
+            const timeVotes = data.time?.votes || {};
+            let maxTime = '';
+            let maxCount = 0;
+            for (const [opt, votes] of Object.entries(timeVotes)) {
+                if ((votes?.length || 0) > maxCount) {
+                    maxCount = votes.length;
+                    maxTime = opt;
+                }
+            }
+
+            if (daysEl) {
+                daysEl.textContent = maxTime ? '待定' : '--';
+            }
+        }
+
+        function renderAll() {
+            ['time', 'place', 'activity'].forEach(renderVote);
+            renderAttendees();
+            updateStats();
+        }
+
+        const themeDescEl = document.getElementById('themeDesc');
+        if (themeDescEl) themeDescEl.addEventListener('blur', saveData);
+
+        ['newTime', 'newPlace', 'newActivity'].forEach((id, idx) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const types = ['time', 'place', 'activity'];
+                        addOption(types[idx]);
+                    }
+                });
+            }
+        });
+
+        function showResetModal() {
+            const modal = document.getElementById('resetModal');
+            if (modal) modal.classList.add('show');
+        }
+
+        function hideResetModal() {
+            const modal = document.getElementById('resetModal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        async function confirmReset() {
+            hideResetModal();
+            updateSyncStatus(true, '重置中...');
+
+            stopPolling();
+
+            data = {
+                theme: '',
+                time: { options: ['本周六下午', '本周日下午', '下周六全天', '下周日下午'], votes: {} },
+                place: { options: ['风雅皇姑区', '浑河岸边', '工业美学铁西区', '金廊沈河区', '怀旧和平区'], votes: {} },
+                activity: { options: ['品茗论道', '把酒言欢', '登山望远', '闲庭对弈', '赏花游园', '观影小酌', '打球运动'], votes: {} },
+                attendees: []
+            };
+
+            initVotes();
+            const themeEl = document.getElementById('themeDesc');
+            if (themeEl) {
+                themeEl.innerText = '春风拂面，花开正好。诚邀诸君暂别尘嚣，共赴一场如风般自在的雅集。\n\n或品茗论道，或把酒言欢，或登高望远，或闲庭信步。\n\n愿此间时光，如宋人笔下的山水，淡远而悠长。';
+            }
+            
+            localStorage.removeItem(STORAGE_KEY);
+            
+            await saveToCloud();
+            
+            renderAll();
+            startPolling();
+            
+            alert('已成功重置，所有数据已清空！');
+            updateSyncStatus(false, '云端同步');
+        }
+
+        window.addEventListener('beforeunload', () => {
+            stopPolling();
+        });
+
+        loadData();
+    </script>
+</body>
+</html>
