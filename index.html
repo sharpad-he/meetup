@@ -812,6 +812,7 @@
 
         let pollingInterval = null;
         let lastModified = null;
+        let isSaving = false;
 
         function updateSyncStatus(syncing, message) {
             const status = document.getElementById('syncStatus');
@@ -835,6 +836,8 @@
         }
 
         async function fetchFromCloud() {
+            if (isSaving) return;
+            
             try {
                 const response = await fetch(`${API_BASE}/b/${JSONBIN_CONFIG.binId}/latest`, {
                     headers: {
@@ -851,6 +854,7 @@
                         if (cloudModified !== lastModified) {
                             lastModified = cloudModified;
                             data = JSON.parse(JSON.stringify(cloudData));
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                             initVotes();
                             const themeEl = document.getElementById('themeDesc');
                             if (themeEl) {
@@ -892,7 +896,6 @@
         async function loadData() {
             updateSyncStatus(true);
             
-            // 尝试先从云端获取数据
             let cloudSuccess = false;
             try {
                 const response = await fetch(`${API_BASE}/b/${JSONBIN_CONFIG.binId}/latest`, {
@@ -907,13 +910,13 @@
                         data = JSON.parse(JSON.stringify(result.record));
                         lastModified = result.metadata.modifiedAt;
                         cloudSuccess = true;
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                     }
                 }
             } catch (error) {
                 console.log('从云端获取数据失败，尝试本地数据:', error);
             }
             
-            // 如果云端获取失败，尝试从本地获取
             if (!cloudSuccess) {
                 const localData = localStorage.getItem(STORAGE_KEY);
                 if (localData) {
@@ -925,7 +928,6 @@
                 }
             }
             
-            // 确保数据结构完整
             if (!data.time) data.time = { options: ['本周六下午', '本周日下午', '下周六全天', '下周日下午'], votes: {} };
             if (!data.place) data.place = { options: ['风雅皇姑区', '浑河岸边', '工业美学铁西区', '金廊沈河区', '怀旧和平区'], votes: {} };
             if (!data.activity) data.activity = { options: ['品茗论道', '把酒言欢', '登山望远', '闲庭对弈', '赏花游园', '观影小酌', '打球运动'], votes: {} };
@@ -955,14 +957,21 @@
         }
 
         async function saveData() {
+            if (isSaving) return;
+            isSaving = true;
             updateSyncStatus(true);
             data.theme = document.getElementById('themeDesc').innerText;
 
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             
-            await saveToCloud();
+            const saved = await saveToCloud();
             
-            updateSyncStatus(false, '云端同步');
+            if (saved) {
+                await fetchFromCloud();
+            }
+            
+            isSaving = false;
+            updateSyncStatus(false, saved ? '已同步' : '同步失败');
         }
 
         function initVotes() {
