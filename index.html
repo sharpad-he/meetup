@@ -856,6 +856,7 @@
                     console.log('从云端获取数据:', result);
                     if (result.record) {
                         data = JSON.parse(JSON.stringify(result.record));
+                        ensureDataStructure();
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                         
                         initVotes();
@@ -1079,7 +1080,7 @@
             const container = document.getElementById('attendeeList');
             if (!container) return;
             
-            if (data.attendees.length === 0) {
+            if (!data.attendees || data.attendees.length === 0) {
                 container.innerHTML = '<p style="text-align: center; color: var(--tea-light); font-style: italic;">暂无报名，期待您的到来</p>';
                 return;
             }
@@ -1100,7 +1101,7 @@
             const votesEl = document.getElementById('statVotes');
             const daysEl = document.getElementById('statDays');
             
-            if (attendeesEl) attendeesEl.textContent = data.attendees.length;
+            if (attendeesEl) attendeesEl.textContent = data.attendees?.length || 0;
 
             const totalVotes = ['time', 'place', 'activity'].reduce((sum, type) => {
                 return sum + Object.values(data[type]?.votes || {}).reduce((s, arr) => s + (arr?.length || 0), 0);
