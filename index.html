@@ -801,6 +801,7 @@
 
         const API_BASE = 'https://api.jsonbin.io/v3';
         const STORAGE_KEY = 'xiangfeng_gathering_v4';
+        const SYNC_INTERVAL = 2 * 60 * 1000;
 
         let data = {
             theme: '',
@@ -811,8 +812,8 @@
         };
 
         let pollingInterval = null;
-        let lastModified = null;
-        let isSaving = false;
+        let isSyncing = false;
+        let pendingSync = false;
 
         function updateSyncStatus(syncing, message) {
             const status = document.getElementById('syncStatus');
@@ -822,7 +823,7 @@
                 status.querySelector('span:last-child').textContent = '同步中...';
             } else {
                 status.classList.remove('syncing');
-                status.querySelector('span:last-child').textContent = message || '云端同步';
+                status.querySelector('span:last-child').textContent = message || '已同步';
             }
         }
 
@@ -835,8 +836,14 @@
             return uid;
         }
 
-        async function fetchFromCloud() {
-            if (isSaving) return;
+        async function syncFromCloud(force = false) {
+            if (isSyncing && !force) {
+                pendingSync = true;
+                return;
+            }
+            
+            isSyncing = true;
+            updateSyncStatus(true);
             
             try {
                 const response = await fetch(`${API_BASE}/b/${JSONBIN_CONFIG.binId}/latest`, {
@@ -848,25 +855,31 @@
                 if (response.ok) {
                     const result = await response.json();
                     if (result.record) {
-                        const cloudData = result.record;
-                        const cloudModified = result.metadata.modifiedAt;
+                        data = JSON.parse(JSON.stringify(result.record));
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                         
-                        if (cloudModified !== lastModified) {
-                            lastModified = cloudModified;
-                            data = JSON.parse(JSON.stringify(cloudData));
-                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                            initVotes();
-                            const themeEl = document.getElementById('themeDesc');
-                            if (themeEl) {
-                                themeEl.innerText = data.theme || '春风拂面，花开正好。诚邀诸君暂别尘嚣，共赴一场如风般自在的雅集。\n\n或品茗论道，或把酒言欢，或登高望远，或闲庭信步。\n\n愿此间时光，如宋人笔下的山水，淡远而悠长。';
-                            }
-                            renderAll();
+                        initVotes();
+                        const themeEl = document.getElementById('themeDesc');
+                        if (themeEl) {
+                            themeEl.innerText = data.theme || '春风拂面，花开正好。诚邀诸君暂别尘嚣，共赴一场如风般自在的雅集。\n\n或品茗论道，或把酒言欢，或登高望远，或闲庭信步。\n\n愿此间时光，如宋人笔下的山水，淡远而悠长。';
                         }
+                        renderAll();
+                        updateSyncStatus(false, '已同步');
+                        return true;
                     }
                 }
             } catch (error) {
-                console.log('从云端获取数据失败:', error);
+                console.error('从云端同步数据失败:', error);
+            } finally {
+                isSyncing = false;
+                if (pendingSync) {
+                    pendingSync = false;
+                    syncFromCloud(true);
+                }
             }
+            
+            updateSyncStatus(false, '同步失败');
+            return false;
         }
 
         async function saveToCloud() {
@@ -881,10 +894,6 @@
                 });
                 
                 if (response.ok) {
-                    const result = await response.json();
-                    if (result.metadata) {
-                        lastModified = result.metadata.modifiedAt;
-                    }
                     return true;
                 }
             } catch (error) {
@@ -896,26 +905,7 @@
         async function loadData() {
             updateSyncStatus(true);
             
-            let cloudSuccess = false;
-            try {
-                const response = await fetch(`${API_BASE}/b/${JSONBIN_CONFIG.binId}/latest`, {
-                    headers: {
-                        'X-Master-Key': JSONBIN_CONFIG.masterKey
-                    }
-                });
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result.record) {
-                        data = JSON.parse(JSON.stringify(result.record));
-                        lastModified = result.metadata.modifiedAt;
-                        cloudSuccess = true;
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                    }
-                }
-            } catch (error) {
-                console.log('从云端获取数据失败，尝试本地数据:', error);
-            }
+            let cloudSuccess = await syncFromCloud(true);
             
             if (!cloudSuccess) {
                 const localData = localStorage.getItem(STORAGE_KEY);
@@ -928,25 +918,32 @@
                 }
             }
             
-            if (!data.time) data.time = { options: ['本周六下午', '本周日下午', '下周六全天', '下周日下午'], votes: {} };
-            if (!data.place) data.place = { options: ['风雅皇姑区', '浑河岸边', '工业美学铁西区', '金廊沈河区', '怀旧和平区'], votes: {} };
-            if (!data.activity) data.activity = { options: ['品茗论道', '把酒言欢', '登山望远', '闲庭对弈', '赏花游园', '观影小酌', '打球运动'], votes: {} };
-            if (!data.attendees) data.attendees = [];
-            
+            ensureDataStructure();
             initVotes();
+            
             const themeEl = document.getElementById('themeDesc');
             if (themeEl) {
                 themeEl.innerText = data.theme || '春风拂面，花开正好。诚邀诸君暂别尘嚣，共赴一场如风般自在的雅集。\n\n或品茗论道，或把酒言欢，或登高望远，或闲庭信步。\n\n愿此间时光，如宋人笔下的山水，淡远而悠长。';
             }
+            
             renderAll();
-            updateSyncStatus(false, cloudSuccess ? '云端同步' : '本地模式');
+            updateSyncStatus(false, cloudSuccess ? '已同步' : '本地模式');
             
             startPolling();
         }
 
+        function ensureDataStructure() {
+            if (!data.time) data.time = { options: ['本周六下午', '本周日下午', '下周六全天', '下周日下午'], votes: {} };
+            if (!data.place) data.place = { options: ['风雅皇姑区', '浑河岸边', '工业美学铁西区', '金廊沈河区', '怀旧和平区'], votes: {} };
+            if (!data.activity) data.activity = { options: ['品茗论道', '把酒言欢', '登山望远', '闲庭对弈', '赏花游园', '观影小酌', '打球运动'], votes: {} };
+            if (!data.attendees) data.attendees = [];
+        }
+
         function startPolling() {
             if (pollingInterval) clearInterval(pollingInterval);
-            pollingInterval = setInterval(fetchFromCloud, 3000);
+            pollingInterval = setInterval(() => {
+                syncFromCloud(false);
+            }, SYNC_INTERVAL);
         }
 
         function stopPolling() {
@@ -957,20 +954,21 @@
         }
 
         async function saveData() {
-            if (isSaving) return;
-            isSaving = true;
+            if (isSyncing) {
+                pendingSync = true;
+                return;
+            }
+            
             updateSyncStatus(true);
             data.theme = document.getElementById('themeDesc').innerText;
-
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             
             const saved = await saveToCloud();
             
             if (saved) {
-                await fetchFromCloud();
+                await syncFromCloud(true);
             }
             
-            isSaving = false;
             updateSyncStatus(false, saved ? '已同步' : '同步失败');
         }
 
@@ -1169,7 +1167,7 @@
             startPolling();
             
             alert('已成功重置，所有数据已清空！');
-            updateSyncStatus(false, '云端同步');
+            updateSyncStatus(false, '已同步');
         }
 
         window.addEventListener('beforeunload', () => {
