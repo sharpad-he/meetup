@@ -856,6 +856,8 @@
                     console.log('从云端获取数据:', result);
                     if (result.record) {
                         data = JSON.parse(JSON.stringify(result.record));
+                        console.log('syncFromCloud: 解析后 data =', data);
+                        console.log('syncFromCloud: data.attendees =', data.attendees);
                         ensureDataStructure();
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                         
@@ -864,6 +866,7 @@
                         if (themeEl) {
                             themeEl.innerText = data.theme || '春风拂面，花开正好。诚邀诸君暂别尘嚣，共赴一场如风般自在的雅集。\n\n或品茗论道，或把酒言欢，或登高望远，或闲庭信步。\n\n愿此间时光，如宋人笔下的山水，淡远而悠长。';
                         }
+                        console.log('syncFromCloud: 调用 renderAll()');
                         renderAll();
                         updateSyncStatus(false, '已同步');
                         return true;
@@ -889,6 +892,7 @@
         }
 
         async function saveToCloud() {
+            console.log('saveToCloud: 开始保存，data =', data);
             try {
                 const response = await fetch(`${API_BASE}/b/${JSONBIN_CONFIG.binId}`, {
                     method: 'PUT',
@@ -899,6 +903,7 @@
                     body: JSON.stringify({ record: data })
                 });
                 
+                console.log('saveToCloud: response.status =', response.status);
                 if (response.ok) {
                     const result = await response.json();
                     console.log('保存到云端成功:', result);
@@ -979,10 +984,13 @@
             saveDataLocal();
             
             const saved = await saveToCloud();
+            console.log('saveData: saved =', saved);
             
             if (saved) {
+                console.log('saveData: 保存成功，开始同步...');
                 await syncFromCloud(true);
             } else {
+                console.log('saveData: 保存失败，仅更新本地显示');
                 renderAll();
             }
             
@@ -1076,9 +1084,14 @@
 
         function renderAttendees() {
             const container = document.getElementById('attendeeList');
-            if (!container) return;
+            if (!container) {
+                console.error('renderAttendees: 找不到 attendeeList 容器');
+                return;
+            }
             
-            if (!data.attendees || data.attendees.length === 0) {
+            console.log('renderAttendees: data.attendees =', data.attendees);
+            
+            if (!data.attendees || !Array.isArray(data.attendees) || data.attendees.length === 0) {
                 container.innerHTML = '<p style="text-align: center; color: var(--tea-light); font-style: italic;">暂无报名，期待您的到来</p>';
                 return;
             }
@@ -1086,10 +1099,10 @@
             container.innerHTML = data.attendees.map(a => `
                 <div class="attendee-card">
                     <button class="remove-btn" onclick="removeAttendee(${a.id})">×</button>
-                    <div class="attendee-avatar">${a.name.charAt(0)}</div>
-                    <div class="attendee-name">${a.name}</div>
+                    <div class="attendee-avatar">${a.name?.charAt(0) || '?'}</div>
+                    <div class="attendee-name">${a.name || '未知'}</div>
                     ${a.note ? `<div class="attendee-note">${a.note}</div>` : ''}
-                    <div class="attendee-time">${a.time}</div>
+                    <div class="attendee-time">${a.time || '-'}</div>
                 </div>
             `).join('');
         }
