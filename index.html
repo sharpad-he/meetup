@@ -854,6 +854,7 @@
                 
                 if (response.ok) {
                     const result = await response.json();
+                    console.log('从云端获取数据:', result);
                     if (result.record) {
                         data = JSON.parse(JSON.stringify(result.record));
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -866,7 +867,12 @@
                         renderAll();
                         updateSyncStatus(false, '已同步');
                         return true;
+                    } else {
+                        console.warn('云端数据格式不正确，record字段为空');
                     }
+                } else {
+                    const errorText = await response.text();
+                    console.error('从云端同步数据失败，响应:', response.status, errorText);
                 }
             } catch (error) {
                 console.error('从云端同步数据失败:', error);
@@ -890,11 +896,16 @@
                         'Content-Type': 'application/json',
                         'X-Master-Key': JSONBIN_CONFIG.masterKey
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({ record: data })
                 });
                 
                 if (response.ok) {
+                    const result = await response.json();
+                    console.log('保存到云端成功:', result);
                     return true;
+                } else {
+                    const errorText = await response.text();
+                    console.error('保存到云端失败，响应:', response.status, errorText);
                 }
             } catch (error) {
                 console.error('保存到云端失败:', error);
