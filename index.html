@@ -953,6 +953,11 @@
             }
         }
 
+        function saveDataLocal() {
+            data.theme = document.getElementById('themeDesc').innerText;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
         async function saveData() {
             if (isSyncing) {
                 pendingSync = true;
@@ -960,8 +965,7 @@
             }
             
             updateSyncStatus(true);
-            data.theme = document.getElementById('themeDesc').innerText;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            saveDataLocal();
             
             const saved = await saveToCloud();
             
@@ -1015,7 +1019,7 @@
             } else {
                 votes[option].push(uid);
             }
-            await saveData();
+            saveDataLocal();
             renderVote(type);
             updateStats();
         }
@@ -1027,7 +1031,7 @@
             if (!data[type].options.includes(value)) {
                 data[type].options.push(value);
                 data[type].votes[value] = [];
-                await saveData();
+                saveDataLocal();
                 renderVote(type);
                 input.value = '';
             }
@@ -1115,7 +1119,7 @@
         }
 
         const themeDescEl = document.getElementById('themeDesc');
-        if (themeDescEl) themeDescEl.addEventListener('blur', saveData);
+        if (themeDescEl) themeDescEl.addEventListener('blur', saveDataLocal);
 
         ['newTime', 'newPlace', 'newActivity'].forEach((id, idx) => {
             const el = document.getElementById(id);
