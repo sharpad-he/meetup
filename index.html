@@ -982,6 +982,8 @@
             
             if (saved) {
                 await syncFromCloud(true);
+            } else {
+                renderAll();
             }
             
             updateSyncStatus(false, saved ? '已同步' : '同步失败');
@@ -1063,8 +1065,6 @@
             };
             data.attendees.push(attendee);
             await saveData();
-            renderAttendees();
-            updateStats();
             document.getElementById('signupName').value = '';
             document.getElementById('signupNote').value = '';
         }
@@ -1072,8 +1072,6 @@
         async function removeAttendee(id) {
             data.attendees = data.attendees.filter(a => a.id !== id);
             await saveData();
-            renderAttendees();
-            updateStats();
         }
 
         function renderAttendees() {
