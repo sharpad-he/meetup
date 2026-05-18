@@ -1091,7 +1091,7 @@
             } else {
                 votes[option].push(uid);
             }
-            saveDataLocal();
+            await saveData();
             renderVote(type);
             updateStats();
         }
@@ -1103,7 +1103,7 @@
             if (!data[type].options.includes(value)) {
                 data[type].options.push(value);
                 data[type].votes[value] = [];
-                saveDataLocal();
+                await saveData();
                 renderVote(type);
                 input.value = '';
             }
@@ -1192,7 +1192,7 @@
         }
 
         const themeDescEl = document.getElementById('themeDesc');
-        if (themeDescEl) themeDescEl.addEventListener('blur', saveDataLocal);
+        if (themeDescEl) themeDescEl.addEventListener('blur', () => saveData());
 
         ['newTime', 'newPlace', 'newActivity'].forEach((id, idx) => {
             const el = document.getElementById(id);
